@@ -2,7 +2,7 @@ pipeline {
     agent any
 
      tools {
-        maven 'Maven 3.9.6' // نفس الاسم اللي دخلته في Global Tool Configuration
+        maven 'Maven 3.6.3' // نفس الاسم اللي دخلته في Global Tool Configuration
     }
 
 
