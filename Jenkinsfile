@@ -24,14 +24,14 @@ pipeline {
         //     }
         // }
         
-        stage('Docker Test') {
-            agent {
-                docker { image 'maven:3.9.10-eclipse-temurin-21-alpine' }
-            }
-            steps {
-                sh 'mvn --version'
-            }
-        }
+        //stage('Docker Test') {
+        //    agent {
+        //        docker { image 'maven:3.9.10-eclipse-temurin-21-alpine' }
+        //    }
+        //    steps {
+        //        sh 'mvn --version'
+        //    }
+        //}
         
         // stage ('Publish') {
         //     steps {
