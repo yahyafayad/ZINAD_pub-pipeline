@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.10-eclipse-temurin-21-alpine'
-        }
-
-    }
+    agent any
 
     stages{
         stage('Checkout'){
@@ -19,13 +14,13 @@ pipeline {
         
          stage('Build'){
              steps {
-                sh 'mvn clean install -DskipTests'
+                 sh 'mvn clean install -DskipTests'
              }
              post {
                  success {
                      echo 'Now Archiving...'
                      archiveArtifacts artifacts: '**/target/*.war'
-                }
+                 }
              }
          }
         
