@@ -5,9 +5,9 @@ pipeline {
         stage('Checkout'){
             steps {
                 checkout scmGit(
-                    branches: [[name: '*/master']], 
+                    branches: [[name: '*/main']], 
                     extensions: [], 
-                    userRemoteConfigs: [[url: 'https://github.com/Co0o0oL/vprofile-project/']]
+                    userRemoteConfigs: [[url: 'https://github.com/yahyafayad/ZINAD_pub-pipeline.git']]
                 )
             }
         }
