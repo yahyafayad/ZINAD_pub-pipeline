@@ -28,7 +28,33 @@ pipeline {
                  }
              }
          }
-        
+         stage('Publish') {
+            steps {
+                nexusPublisher(
+                    nexusInstanceId: 'Nexus_Repo',
+                    nexusRepositoryId: 'maven-releases',
+                    packages: [
+                        [
+                            $class: 'MavenPackage',
+                            mavenAssetList: [
+                                [
+                                    classifier: 'vprofile',
+                                    extension: '',
+                                    filePath: 'target/vprofile-v1.war'
+                                ]
+                            ],
+                            mavenCoordinate: [
+                                artifactId: 'vprofile',
+                                groupId: 'vprofile',
+                                packaging: 'war',
+                                version: '1'
+                            ]
+                        ]
+                    ]
+                )
+            }
+        }
+
         //stage('Docker Test') {
         //    agent {
         //        docker { image 'maven:3.9.10-eclipse-temurin-21-alpine' }
