@@ -6,7 +6,7 @@ pipeline {
             steps {
                 checkout scmGit(
                     branches: [[name: '*/main']], 
-                    extensions: [], 
+                    credentialsId: 'git_crad', 
                     userRemoteConfigs: [[url: 'https://github.com/yahyafayad/ZINAD_pub-pipeline.git']]
                 )
             }
