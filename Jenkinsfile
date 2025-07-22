@@ -78,17 +78,23 @@ pipeline {
         archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
     }
 }
-    stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub_cerdintal', usernameVariable: 'yahyafayad', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$yahyafayad" --password-stdin
-                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
-                        docker push ${FULL_IMAGE}
-                    '''
-                }
-            }
+   stage('Push Docker Image') {
+    steps {
+        script {
+            IMAGE_NAME = "zinad-app"
+            IMAGE_TAG = "${BUILD_NUMBER}"
+            FULL_IMAGE = "yahyafayad/${IMAGE_NAME}:${IMAGE_TAG}"
         }
+        withCredentials([usernamePassword(credentialsId: 'dockerhub_cerdintal', usernameVariable: 'yahyafayad', passwordVariable: 'DOCKER_PASS')]) {
+            sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKyahyafayadER_USER" --password-stdin
+                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
+                docker push ${FULL_IMAGE}
+            '''
+        }
+    }
+}
+
 
         stage('Deploy Container') {
             steps {
