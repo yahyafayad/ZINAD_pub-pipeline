@@ -68,15 +68,17 @@ pipeline {
                 }
             }
         }
-       stage('Scan Docker Image using Trivy') {
-    steps {
-        script {
+      stage('Scan Docker Image using Trivy') {
+        steps {
+         script {
             sh """
-                trivy image --no-progress ${dockerImage.imageName()} || true
+                trivy image --no-progress --format table --output trivy-report.txt ${dockerImage.imageName()} || true
             """
-              }
-           }
-       }
+        }
+        archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
+    }
+}
+
 
         
     }
