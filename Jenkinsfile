@@ -85,7 +85,7 @@ pipeline {
             sh '''
                 docker rm -f zap-scanner || true
 
-                docker run -u root -d --name zap-scanner -p 8090:8090 ghcr.io/zaproxy/zap2docker-weekly:latest \
+                docker run -u root -d --name zap-scanner -p 8090:8090 owasp/zap2docker-weekly \
                 zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.disablekey=true
 
                 echo "Waiting for ZAP to be ready..."
@@ -95,7 +95,7 @@ pipeline {
                 curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://host.docker.internal:8081&maxChildren=10"
 
                 echo "Waiting for scan to complete..."
-                sleep 40
+                sleep 30
 
                 echo "Fetching Alerts..."
                 curl "http://127.0.0.1:8090/OTHER/core/other/jsonreport/" -o zap-report.json || true
@@ -105,6 +105,7 @@ pipeline {
         }
     }
 }
+
 
 
         
