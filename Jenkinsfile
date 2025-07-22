@@ -45,7 +45,7 @@ pipeline {
    stage('SonarQube Analysis') {
     steps {
         withSonarQubeEnv('sonar') {
-            sh 'mvn sonar:sonar -Dsonar.projectKey=ZINAD_pub-pipeline -Dsonar.host.url=http://localhost:9000'
+            sh "${SONARQUBE_SCANNER_HOME}/bin/sonar-scanner"
         }
     }
 }
