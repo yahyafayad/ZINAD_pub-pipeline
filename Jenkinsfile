@@ -75,15 +75,7 @@ pipeline {
                 trivy image --no-progress --timeout 10m --format table --output trivy-report.txt ${dockerImage.imageName()} || true
             """
         }
-        archiveArtifacts artifacts: 'trivy-report.html', onlyIfSuccessful: false
-
-        // عرض التقرير في Jenkins GUI
-        publishHTML(target: [
-            reportDir: '.',
-            reportFiles: 'trivy-report.html',
-            reportName: 'Trivy Vulnerability Report'
-        ])
-
+        archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
     }
 }
 
