@@ -6,8 +6,8 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_SCANNER_HOME = tool 'DefaultSonarScanner' // عدل الاسم لو مختلف
-    }
+        SONARQUBE_SCANNER_HOME = tool 'DefaultSonarScanner'
+     }
 
     stages {
         stage('Checkout') {
