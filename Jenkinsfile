@@ -92,7 +92,7 @@ pipeline {
                 sleep 40
 
                 echo "Starting ZAP Spider scan..."
-                curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://host.docker.internal:8081&maxChildren=10"
+                curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://172.17.0.1:8081&maxChildren=10"
 
                 echo "Waiting for scan to complete..."
                 sleep 30
@@ -105,6 +105,7 @@ pipeline {
         }
     }
 }
+
 
 
 
