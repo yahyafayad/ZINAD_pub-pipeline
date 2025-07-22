@@ -28,32 +28,24 @@ pipeline {
                  }
              }
          }
-         stage('Publish') {
-            steps {
-                nexusPublisher(
-                    nexusInstanceId: 'Nexus_Repo',
-                    nexusRepositoryId: 'maven-releases',
-                    packages: [
-                        [
-                            $class: 'MavenPackage',
-                            mavenAssetList: [
-                                [
-                                    classifier: 'vprofile',
-                                    extension: '',
-                                    filePath: 'target/vprofile-v1.war'
-                                ]
-                            ],
-                            mavenCoordinate: [
-                                artifactId: 'vprofile',
-                                groupId: 'vprofile',
-                                packaging: 'war',
-                                version: '1'
-                            ]
-                        ]
-                    ]
-                )
-            }
-        }
+         stage('test'){
+             steps {
+                 sh 'mvn test'
+             }
+             
+         }
+         stage('artifact'){
+             steps {
+                 sh 'mvn package'
+             }
+             
+         }
+         stage('artifact upload'){
+             steps {
+                nexusArtifactUploader artifacts: [[artifactId: 'zinad-maven', classifier: '', file: 'target/zinad-maven-v1.war', type: '.war']], credentialsId: 'nexus_id', groupId: 'com.visualpathit', nexusUrl: 'localhost:8081', nexusVersion: 'nexus2', protocol: 'http', repository: 'zinad-maven', version: 'v1'
+             }
+             
+         }
 
         //stage('Docker Test') {
         //    agent {
