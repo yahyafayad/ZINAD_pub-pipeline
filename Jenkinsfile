@@ -28,12 +28,7 @@ pipeline {
                  }
              }
          }
-         stage('test'){
-             steps {
-                 sh 'mvn test'
-             }
-             
-         }
+  
          stage('artifact'){
              steps {
                  sh 'mvn package'
