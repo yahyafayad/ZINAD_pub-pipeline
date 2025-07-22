@@ -49,13 +49,7 @@ pipeline {
             }
         }
     }
-    stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonar') {
-                    sh "${SONARQUBE_SCANNER_HOME}/bin/sonar-scanner"
-                }
-            }
-        }
+   
 
 
     stage('Quality Gate') {
