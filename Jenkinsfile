@@ -28,11 +28,6 @@ pipeline {
                  }
              }
          }
-  
-         stage('artifact'){
-             steps {
-                 sh 'mvn package'
-             }
              
          }
          stage('artifact upload'){
