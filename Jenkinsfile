@@ -97,15 +97,22 @@ pipeline {
 }
 
 
-        stage('Deploy Container') {
-            steps {
-                sh '''
-                    docker rm -f zinad-app-container || true
-                    docker run -d --name zinad-app-container -p 8081:8081 ${IMAGE_NAME}:${IMAGE_TAG}
-                    sleep 10
-                '''
-            }
+    stage('Deploy Container') {
+        steps {
+           script {
+            def IMAGE_NAME = "zinad-app"
+            def IMAGE_TAG = "${BUILD_NUMBER}"
+            def FULL_IMAGE = "yahyafayad/${IMAGE_NAME}:${IMAGE_TAG}"
+
+            // Remove old container if exists
+            sh "docker rm -f zinad-app-container || true"
+
+            // Run the container
+            sh "docker run -d --name zinad-app-container -p 8081:8081 ${FULL_IMAGE}"
         }
+    }
+}
+
 
 
         // stage('Deploy to Kubernetes') {
