@@ -30,20 +30,20 @@ pipeline {
 
         stage('artifact upload') {
             steps {
-                nexusArtifactUploader artifacts: [[
-                    artifactId: 'zinad-maven',
-                    classifier: '',
-                    file: 'target/zinad-maven-v1.war',
-                    type: 'war'
-                ]],
-                credentialsId: 'nexus_id',
-                groupId: 'com.visualpathit',
-                nexusUrl: 'localhost:8081',
-                nexusVersion: 'nexus2',
-                protocol: 'http',
-                repository: 'zinad-maven',
-                version: 'v1'
-            }
+        nexusArtifactUploader artifacts: [[
+            artifactId: 'zinad-maven',
+            classifier: '',
+            file: 'target/vprofile-v1.war',  // <-- اسم الملف الصحيح
+            type: 'war'
+        ]],
+        credentialsId: 'nexus_id',
+        groupId: 'com.visualpathit',
+        nexusUrl: 'localhost:8081',
+        nexusVersion: 'nexus2',
+        protocol: 'http',
+        repository: 'zinad-maven',
+        version: 'v1'
+         }
         }
     }
 }
