@@ -1,13 +1,12 @@
 pipeline {
     agent any
 
-     tools {
-        maven 'maven' 
+    tools {
+        maven 'maven'
     }
 
-
-    stages{
-        stage('Checkout'){
+    stages {
+        stage('Checkout') {
             steps {
                 checkout scmGit(
                     branches: [[name: '*/main']], 
@@ -16,26 +15,39 @@ pipeline {
                 )
             }
         }
-        
-         stage('Build'){
-             steps {
-                 sh 'mvn clean install -DskipTests'
-             }
-             post {
-                 success {
-                     echo 'Now Archiving...'
-                     archiveArtifacts artifacts: '**/target/*.war'
-                 }
-             }
-         }
-             
-         }
-         stage('artifact upload'){
-             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'zinad-maven', classifier: '', file: 'target/zinad-maven-v1.war', type: '.war']], credentialsId: 'nexus_id', groupId: 'com.visualpathit', nexusUrl: 'localhost:8081', nexusVersion: 'nexus2', protocol: 'http', repository: 'zinad-maven', version: 'v1'
-             }
-             
-         }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean install -DskipTests'
+            }
+            post {
+                success {
+                    echo 'Now Archiving...'
+                    archiveArtifacts artifacts: '**/target/*.war'
+                }
+            }
+        }
+
+        stage('artifact upload') {
+            steps {
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'zinad-maven',
+                    classifier: '',
+                    file: 'target/zinad-maven-v1.war',
+                    type: 'war'
+                ]],
+                credentialsId: 'nexus_id',
+                groupId: 'com.visualpathit',
+                nexusUrl: 'localhost:8081',
+                nexusVersion: 'nexus2',
+                protocol: 'http',
+                repository: 'zinad-maven',
+                version: 'v1'
+            }
+        }
+    }
+}
+
 
         //stage('Docker Test') {
         //    agent {
