@@ -55,17 +55,20 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
 
-        stage('Deploy') {
+         stage('Build Docker Image') {
             steps {
-                echo 'Deploying to production...'
-                // Add deployment steps here
+                script {
+                    dockerImage = docker.build("zinad-app:${env.BUILD_NUMBER}")
+                }
             }
         }
+
+        
     }
 }
