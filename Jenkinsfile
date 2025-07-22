@@ -72,7 +72,7 @@ pipeline {
         steps {
          script {
             sh """
-                trivy image --no-progress --format table --output trivy-report.txt ${dockerImage.imageName()} || true
+                trivy image --no-progress --timeout 10m --format table --output trivy-report.txt ${dockerImage.imageName()} || true
             """
         }
         archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
