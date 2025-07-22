@@ -2,70 +2,42 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven'
+        maven 'Maven' // لازم تكون معرف maven من Manage Jenkins > Global Tool Config
     }
 
     environment {
-    SONARQUBE_SCANNER_HOME = tool 'sonar-scanner' 
-     }
+        // هنا ممكن تضيف متغيرات زي JAVA_HOME أو غيره
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scmGit(
-                    branches: [[name: '*/main']], 
-                    credentialsId: 'git_cred', 
-                    userRemoteConfigs: [[url: 'https://github.com/yahyafayad/ZINAD_pub-pipeline.git']]
-                )
+                git 'https://github.com/USERNAME/REPO.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean install -DskipTests'
-            }
-            post {
-                success {
-                    echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/target/*.war'
-                }
+                sh 'mvn clean compile'
             }
         }
 
-        stage('SCA - Snyk Scan') {
+        stage('Test') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                        sh '''
-                            snyk auth $SNYK_TOKEN
-                            snyk test --file=pom.xml
-                        '''
-                    }
-                }
+                sh 'mvn test'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Package') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "${SONARQUBE_SCANNER_HOME}/bin/sonar-scanner"
-                }
+                sh 'mvn package'
             }
         }
+    }
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to production...'
-                // Add deployment steps here
-            }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
         }
     }
 }
