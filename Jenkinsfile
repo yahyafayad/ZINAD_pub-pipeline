@@ -78,6 +78,31 @@ pipeline {
         archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
     }
 }
+     stage('DAST Scan with OWASP ZAP') {
+         steps {
+        sh '''
+            # Start OWASP ZAP in background (headless mode)
+            zap.sh -daemon -port 8090 -host 127.0.0.1 -config api.disablekey=true &
+            echo "Waiting for ZAP to start..."
+            sleep 20
+
+            # Run spider on the target
+            curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://127.0.0.1:8081&maxChildren=10"
+            echo "Spider scan started. Sleeping for 20 seconds..."
+            sleep 20
+
+            # Run active scan
+            curl "http://127.0.0.1:8090/JSON/ascan/action/scan/?url=http://127.0.0.1:8081"
+            echo "Active scan started. Sleeping for 30 seconds..."
+            sleep 30
+
+            # Generate HTML report
+            curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/" -o zap-report.html
+        '''
+        archiveArtifacts artifacts: 'zap-report.html', fingerprint: true
+    }
+}
+
 
 
         
