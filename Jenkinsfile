@@ -43,14 +43,12 @@ pipeline {
 
 
    stage('SonarQube Analysis') {
-        steps {
-            script {
-                withSonarQubeEnv('sonar') {
-                    sh 'mvn sonar:sonar-scanner.projectKey=ZINAD_pub-pipeline -Dsonar.host.url=http://localhost:9000'
-                }
-            }
+    steps {
+        withSonarQubeEnv('sonar') {
+            sh 'mvn sonar:sonar -Dsonar.projectKey=ZINAD_pub-pipeline -Dsonar.host.url=http://localhost:9000'
         }
     }
+}
    
 
 
