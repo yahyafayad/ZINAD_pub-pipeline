@@ -84,7 +84,7 @@ pipeline {
             echo 'Starting OWASP ZAP container...'
             sh '''
                 docker rm -f zap-scanner || true
-                docker run -u root -d --name zap-scanner -p 8090:8090 owasp/zap2docker-stable \
+                docker run -u root -d --name zap-scanner -p 8090:8090 ghcr.io/zaproxy/zaproxy:stable \
                 zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.disablekey=true
 
                 echo "Waiting for ZAP to be ready..."
@@ -106,6 +106,7 @@ pipeline {
         }
     }
 }
+
         
 
 
