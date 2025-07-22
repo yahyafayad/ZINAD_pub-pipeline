@@ -39,7 +39,7 @@ pipeline {
         credentialsId: 'nexus_id',
         groupId: 'com.visualpathit',
         nexusUrl: 'localhost:8081/nexus',
-        nexusVersion: 'nexus2',
+        nexusVersion: 'nexus3',
         protocol: 'http',
         repository: 'zinad-maven',
         version: 'v1'
