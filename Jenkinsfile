@@ -16,91 +16,40 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean install -DskipTests'
+    stage('Build') {
+        steps {
+            sh 'mvn clean install -DskipTests'
+        }
+        post {
+            success {
+                echo 'Now Archiving...'
+                archiveArtifacts artifacts: '**/target/*.war'
             }
-            post {
-                success {
-                    echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/target/*.war'
+        }
+    }
+    
+
+   stage('SonarQube Analysis') {
+        steps {
+            script {
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=ZINAD_pub-pipeline -Dsonar.host.url=http://localhost:9000'
                 }
             }
         }
-        }
-        stage ('SCA'){
+    }
+
+    stage('Quality Gate') {
         steps {
-         nexusPolicyEvaluation (
-             advancedProperties: '', enableDebugLogging: true, 
-             failBuildOnNetworkError: false, 
-             failBuildOnScanningErrors: false, 
-             iqApplication: selectedApplication('DSO'), 
-             iqInstanceId: 'Sonatype_IQ', 
-             iqOrganization: 'c7f2a6a693034795af10cf4c08012230', 
-             iqScanPatterns: [[scanPattern: '**/target/*.war']], 
-             iqStage: 'build', jobCredentialsId: 'Nexus_IQ',
-        )
+            timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+            }
         }
     }
-        
 
-        // stage('artifact upload') {
-        //     steps {
-        // nexusArtifactUploader artifacts: [[
-        //     artifactId: 'zinad-maven',
-        //     classifier: '',
-        //     file: 'target/vprofile-v1.war',  // <-- اسم الملف الصحيح
-        //     type: 'war'
-        // ]],
-        // credentialsId: 'nexus_id',
-        // groupId: 'com.visualpathit',
-        // nexusUrl: 'localhost:8081/nexus',
-        // nexusVersion: 'nexus3',
-        // protocol: 'http',
-        // repository: 'zinad-maven',
-        // version: 'v1'
-        //      }
-        // }
-
-
-        //stage('Docker Test') {
-        //    agent {
-        //        docker { image 'maven:3.9.10-eclipse-temurin-21-alpine' }
-        //    }
-        //    steps {
-        //        sh 'mvn --version'
-        //    }
-        //}
-        
-        // stage ('Publish') {
-        //     steps {
-        //         nexusPublisher (
-        //             nexusInstanceId: 'Nexus_Repo', 
-        //             nexusRepositoryId: 'maven-releases', 
-        //             packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: 'vprofile', extension: '', filePath: 'target/vprofile-v1.war']], mavenCoordinate: [artifactId: 'vprofile', groupId: 'vprofile', packaging: 'war', version: '1']]]
-        //             )
-        //     }
-        // }
-        
-	   // stage('Integration Test'){
-    //         steps {
-    //             sh 'mvn verify -DskipUnitTests -DskipTests'
-    //         }
-	   // }
-	
-	   // stage ('Code Analysis With Checkstyle'){
-	   //     steps {
-	   //         sh 'mvn checkstyle:checkstyle'
-	   //     }
-	   //     post {
-    //             success {
-    //                 echo 'Now Archiving...'
-    //                 archiveArtifacts artifacts: '**/target/reports/*.html'
-    //                 archiveArtifacts artifacts: '**/target/checkstyle-result.xml'
-    //             }
-    //         }
-	   // }
-	    
-    
+    stage('Deploy') {
+        steps {
+            echo 'Deploying to production...'
+            // Add deployment steps here
+        }
     }
-    
