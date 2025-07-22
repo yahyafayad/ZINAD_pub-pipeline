@@ -81,16 +81,17 @@ pipeline {
    stage('Push Docker Image') {
     steps {
         script {
-            IMAGE_NAME = "zinad-app"
-            IMAGE_TAG = "${BUILD_NUMBER}"
-            FULL_IMAGE = "yahyafayad/${IMAGE_NAME}:${IMAGE_TAG}"
-        }
-        withCredentials([usernamePassword(credentialsId: 'dockerhub_cerdintal', usernameVariable: 'yahyafayad', passwordVariable: 'DOCKER_PASS')]) {
-            sh '''
-                echo "$DOCKER_PASS" | docker login -u "$yahyafayad" --password-stdin
-                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
-                docker push ${FULL_IMAGE}
-            '''
+            def IMAGE_NAME = "zinad-app"
+            def IMAGE_TAG = "${BUILD_NUMBER}"
+            def FULL_IMAGE = "yahyafayad/${IMAGE_NAME}:${IMAGE_TAG}"
+
+            withCredentials([usernamePassword(credentialsId: 'dockerhub_cerdintal', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
+                    docker push ${FULL_IMAGE}
+                """
+            }
         }
     }
 }
