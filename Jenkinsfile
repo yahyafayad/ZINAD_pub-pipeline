@@ -68,6 +68,15 @@ pipeline {
                 }
             }
         }
+       stage('Scan Docker Image using Trivy') {
+    steps {
+        script {
+            sh """
+                trivy image --no-progress ${dockerImage.imageName()} || true
+            """
+              }
+           }
+       }
 
         
     }
