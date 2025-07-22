@@ -84,28 +84,28 @@ pipeline {
             echo 'Starting OWASP ZAP container...'
             sh '''
                 docker rm -f zap-scanner || true
-                docker run -u root -d --name zap-scanner -p 8090:8090 ghcr.io/zaproxy/zaproxy:stable \
+
+                docker run -u root -d --name zap-scanner -p 8090:8090 ghcr.io/zaproxy/zap2docker-weekly:latest \
                 zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.disablekey=true
 
                 echo "Waiting for ZAP to be ready..."
-                sleep 30
+                sleep 40
 
                 echo "Starting ZAP Spider scan..."
-                curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://127.0.0.1:8081&maxChildren=10"
+                curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://host.docker.internal:8081&maxChildren=10"
 
-                echo "Waiting for Spider scan to complete..."
-                sleep 30
-
-                echo "Fetching Spider scan results..."
-                curl "http://127.0.0.1:8090/JSON/spider/view/status/"
+                echo "Waiting for scan to complete..."
+                sleep 40
 
                 echo "Fetching Alerts..."
-                curl "http://127.0.0.1:8090/JSON/core/view/alerts/" -o zap-alerts.json || true
+                curl "http://127.0.0.1:8090/OTHER/core/other/jsonreport/" -o zap-report.json || true
+                curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/" -o zap-report.html || true
             '''
-            archiveArtifacts artifacts: 'zap-alerts.json', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'zap-report.*', allowEmptyArchive: true
         }
     }
 }
+
 
         
 
