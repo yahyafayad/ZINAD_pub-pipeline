@@ -97,27 +97,27 @@ pipeline {
 }
 
 
-    stage('Deploy Container') {
+   stage('Deploy Container') {
     steps {
         script {
             def IMAGE_NAME = "zinad-app"
             def IMAGE_TAG = "${BUILD_NUMBER}"
             def FULL_IMAGE = "yahyafayad/${IMAGE_NAME}:${IMAGE_TAG}"
 
-            // Kill any container using port 8085
+            // Remove old container if it exists
             sh '''
-                CONTAINER_ID=$(docker ps -q --filter "publish=8085")
-                if [ ! -z "$CONTAINER_ID" ]; then
-                    docker stop $CONTAINER_ID
-                    docker rm $CONTAINER_ID
+                if [ $(docker ps -a -q -f name=zinad-app-container) ]; then
+                    docker rm -f zinad-app-container
                 fi
             '''
 
-            // Run the container on port 8085
+            // Run new container on different port
             sh "docker run -d --name zinad-app-container -p 8085:8081 ${FULL_IMAGE}"
         }
     }
 }
+
+
 
 
 
