@@ -168,7 +168,17 @@ pipeline {
     //         }
     //     }
     // }
-
+stage('DAST Scan with OWASP ZAP') {
+        steps {
+            script {
+                echo 'Starting OWASP ZAP container...'
+                sh '''
+                    docker ps 
+                '''
+                archiveArtifacts artifacts: 'zap-report.*', allowEmptyArchive: true
+            }
+        }
+    }
 
 
 
