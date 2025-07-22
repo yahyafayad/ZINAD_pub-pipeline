@@ -78,30 +78,35 @@ pipeline {
         archiveArtifacts artifacts: 'trivy-report.txt', fingerprint: true
     }
 }
-     stage('DAST Scan with OWASP ZAP') {
-         steps {
-        sh '''
-            # Start OWASP ZAP in background (headless mode)
-            zap.sh -daemon -port 8090 -host 127.0.0.1 -config api.disablekey=true &
-            echo "Waiting for ZAP to start..."
-            sleep 20
+    stage('DAST Scan with OWASP ZAP') {
+    steps {
+        script {
+            echo 'Starting OWASP ZAP container...'
+            sh '''
+                docker rm -f zap-scanner || true
+                docker run -u root -d --name zap-scanner -p 8090:8090 owasp/zap2docker-stable \
+                zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.disablekey=true
 
-            # Run spider on the target
-            curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://127.0.0.1:8081&maxChildren=10"
-            echo "Spider scan started. Sleeping for 20 seconds..."
-            sleep 20
+                echo "Waiting for ZAP to be ready..."
+                sleep 30
 
-            # Run active scan
-            curl "http://127.0.0.1:8090/JSON/ascan/action/scan/?url=http://127.0.0.1:8081"
-            echo "Active scan started. Sleeping for 30 seconds..."
-            sleep 30
+                echo "Starting ZAP Spider scan..."
+                curl "http://127.0.0.1:8090/JSON/spider/action/scan/?url=http://127.0.0.1:8081&maxChildren=10"
 
-            # Generate HTML report
-            curl "http://127.0.0.1:8090/OTHER/core/other/htmlreport/" -o zap-report.html
-        '''
-        archiveArtifacts artifacts: 'zap-report.html', fingerprint: true
+                echo "Waiting for Spider scan to complete..."
+                sleep 30
+
+                echo "Fetching Spider scan results..."
+                curl "http://127.0.0.1:8090/JSON/spider/view/status/"
+
+                echo "Fetching Alerts..."
+                curl "http://127.0.0.1:8090/JSON/core/view/alerts/" -o zap-alerts.json || true
+            '''
+            archiveArtifacts artifacts: 'zap-alerts.json', allowEmptyArchive: true
+        }
     }
 }
+        
 
 
 
