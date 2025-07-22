@@ -27,26 +27,34 @@ pipeline {
                 }
             }
         }
-
-        stage('artifact upload') {
+        stage('Unit Tests') {
             steps {
-        nexusArtifactUploader artifacts: [[
-            artifactId: 'zinad-maven',
-            classifier: '',
-            file: 'target/vprofile-v1.war',  // <-- اسم الملف الصحيح
-            type: 'war'
-        ]],
-        credentialsId: 'nexus_id',
-        groupId: 'com.visualpathit',
-        nexusUrl: 'localhost:8081/nexus',
-        nexusVersion: 'nexus3',
-        protocol: 'http',
-        repository: 'zinad-maven',
-        version: 'v1'
-         }
-        }
-    }
-}
+                sh 'mvn test'
+            }
+            post {
+                success {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }}}
+
+        // stage('artifact upload') {
+        //     steps {
+        // nexusArtifactUploader artifacts: [[
+        //     artifactId: 'zinad-maven',
+        //     classifier: '',
+        //     file: 'target/vprofile-v1.war',  // <-- اسم الملف الصحيح
+        //     type: 'war'
+        // ]],
+        // credentialsId: 'nexus_id',
+        // groupId: 'com.visualpathit',
+        // nexusUrl: 'localhost:8081/nexus',
+        // nexusVersion: 'nexus3',
+        // protocol: 'http',
+        // repository: 'zinad-maven',
+        // version: 'v1'
+        //      }
+        // }
 
 
         //stage('Docker Test') {
