@@ -27,17 +27,19 @@ pipeline {
             }
         }
     }
-    stage('SCA - Snyk Scan') {
-            steps {
-                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                  sh '''
-                      snyk auth $SNYK_TOKEN
-                      snyk test --severity-threshold=high
-                      snyk monitor
-                       '''
-                     }
-              }
-                   }
+   stage('SCA - Snyk Scan') {
+    steps {
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+                sh '''
+                    snyk auth $SNYK_TOKEN
+                    snyk test --severity-threshold=high
+                    snyk monitor
+                '''
+            }
+        }
+    }
+}
 
 
    stage('SonarQube Analysis') {
