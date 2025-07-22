@@ -28,6 +28,20 @@ pipeline {
             }
         }
         }
+        stage ('SCA'){
+        steps {
+         nexusPolicyEvaluation (
+             advancedProperties: '', enableDebugLogging: true, 
+             failBuildOnNetworkError: false, 
+             failBuildOnScanningErrors: false, 
+             iqApplication: selectedApplication('DSO'), 
+             iqInstanceId: 'Sonatype_IQ', 
+             iqOrganization: 'c7f2a6a693034795af10cf4c08012230', 
+             iqScanPatterns: [[scanPattern: '**/target/*.war']], 
+             iqStage: 'build', jobCredentialsId: 'Nexus_IQ',
+        )
+        }
+    }
         
 
         // stage('artifact upload') {
@@ -87,19 +101,6 @@ pipeline {
     //         }
 	   // }
 	    
-    stage ('SCA'){
-        steps {
-         nexusPolicyEvaluation (
-             advancedProperties: '', enableDebugLogging: true, 
-             failBuildOnNetworkError: false, 
-             failBuildOnScanningErrors: false, 
-             iqApplication: selectedApplication('DSO'), 
-             iqInstanceId: 'Sonatype_IQ', 
-             iqOrganization: 'c7f2a6a693034795af10cf4c08012230', 
-             iqScanPatterns: [[scanPattern: '**/target/*.war']], 
-             iqStage: 'build', jobCredentialsId: 'Nexus_IQ',
-        )
-        }
-    }
+    
     }
     
